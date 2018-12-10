@@ -1,0 +1,137 @@
+package NumberAn;
+
+import java.util.Scanner;
+
+/**
+ * 등차/ 등비/ 점화식 계산 및 합 구하는 코드
+ * @author 유정현
+ *	
+ */
+public class NumberAn {
+
+	/**
+	 * 계산하려는 식을 집어넣는 main class 
+	 *
+	 */
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		int toNum = 10;
+		
+		//값을 입력 받아서 할 거면 주석 제거
+		/*
+		Scanner scan = new Scanner(System.in);
+		try {
+			toNum = scan.nextInt();
+		}catch(Exception e) {
+			System.exit(1);
+		}
+		scan.close();
+		*/
+		
+		//등차수열의 핪
+		int sum = sumAn(toNum,1,2);
+		System.out.println("Sum = "+ sum);
+		
+		//등비수열의 합
+		int sum2 = sumBn(toNum,1,2);
+		System.out.println("sum ="+ sum2);
+		
+		//점화식의 합
+		int sum3 = sumCn(toNum,2,3,-2);
+		System.out.println("sum ="+ sum3);
+	}
+	
+	
+	/**
+	 * 등차수열 class
+	 * @param start : 시작하는 값
+	 * @param n : 몇번째 항인지
+	 * @param d : 공차
+	 * @return 등차수열 n번째 항
+	 */
+	public static int numAn(int start,int n, int d) {
+		return(start+n*d);
+	}
+	
+	/**
+	 * 등차수열의 합 class
+	 * @param n : 몇번째 항까지의 합을 구할 것인지
+	 * @param start : 시작하는 값
+	 * @param d : 공차
+	 * @return n항까지의 등차수열의 합
+	 */
+	public static int sumAn(int n,int start, int d) {
+		int sum = 0;
+		for(int i=0;i<n;i++) {
+			System.out.println("["+numAn(start,i,d)+"]");
+			sum += numAn(start,i,d);
+		}
+		return sum;
+	}
+	
+	/**
+	 * 등비수열 class
+	 * @param start : 시작하는 값
+	 * @param n : 몇번째 항인지
+	 * @param r : 공비
+	 * @return 등비수열 n번째 항
+	 */
+	public static int numBn(int start, int n, int r) {
+		int nums = 1;
+		for(int i = 0;i<n;i++) {
+			nums *=start*r;
+		}
+		return nums;
+	}
+	
+	/**
+	 * 등비수열의 합 class
+	 * @param n : 몇번째 항까지 더할 것인지
+	 * @param start : 시작하는 값
+	 * @param r : 공비
+	 * @return n항까지 등비수열의 합
+	 */
+	public static int sumBn(int n, int start, int r) {
+		int sum =0;
+		for( int i=0;i<n;i++) {
+			System.out.println("["+numBn(start,i,r)+"]");
+			sum +=numBn(start,i,r);
+		}
+		return sum;
+	}
+	
+	/**
+	 * 점화식 class
+	 * @param n : 몇번째 항인지
+	 * @param start : 시작하는 값
+	 * @param a : 공비
+	 * @param d : 공차
+	 * @return n항까지 점화식
+	 */
+	public static int numCn(int n, int start, int a, int d) {
+		//An+1 = a*An +d
+		for(int i=0;i<n;i++) {
+			start=a*start+d;
+		}
+		
+		return start;
+	}
+	
+	/**
+	 * 점화식의 합 class 
+	 * @param n
+	 * @param start : 시작하는 값
+	 * @param a : 공비
+	 * @param d : 공차
+	 * @return n항까지 점화식의 합
+	 */
+	public static int sumCn(int n,int start, int a, int d) {
+		int sum = 0;
+		for(int i=0;i<n;i++) {
+			System.out.println("["+numCn(i,start,a,d)+"]");
+			sum +=numCn(i,start,a,d);
+		}
+		
+		return sum;
+	}
+}
