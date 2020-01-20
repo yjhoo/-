@@ -1,0 +1,66 @@
+/*
+프로그래머스
+
+n개의 음이 아닌 정수가 있습니다. 이 수를 적절히 더하거나 빼서 타겟 넘버를 만들려고 합니다. 예를 들어 [1, 1, 1, 1, 1]로 숫자 3을 만들려면 다음 다섯 방법을 쓸 수 있습니다.
+
+-1+1+1+1+1 = 3
++1-1+1+1+1 = 3
++1+1-1+1+1 = 3
++1+1+1-1+1 = 3
++1+1+1+1-1 = 3
+사용할 수 있는 숫자가 담긴 배열 numbers, 타겟 넘버 target이 매개변수로 주어질 때 숫자를 적절히 더하고 빼서 타겟 넘버를 만드는 방법의 수를 return 하도록 solution 함수를 작성해주세요.
+
+제한사항
+주어지는 숫자의 개수는 2개 이상 20개 이하입니다.
+각 숫자는 1 이상 50 이하인 자연수입니다.
+타겟 넘버는 1 이상 1000 이하인 자연수입니다.
+입출력 예
+numbers	target	return
+[1, 1, 1, 1, 1]	3	5
+입출력 예 설명
+문제에 나온 예와 같습니다.
+*/
+
+class Solution {
+    static int answer = 0;
+    public int solution(int[] numbers, int target) {
+
+        //배열의 첫번째 값에 대해서 f_plus 수행
+        f_plus(0, 0, target, numbers);
+        //배열의 첫번째 값에 대해서 f_minus 수행
+        f_minus(0, 0, target, numbers);
+        
+        return answer;
+    }
+    
+    // 특정 값(arr[num]) 에 대해서 기존까지의 합인 sum에 대해 더하기 연산을 수행함     
+    public void f_plus(int num, int sum,int target, int[] arr){
+        int total = sum + arr[num];
+        num++;
+        // arr.length가 최종 배열의 원소에 도달했을 때 target number와 비교하여 같으면 answer에 1을 더해줌
+        if(num == arr.length){
+            if(total == target){
+                answer++;
+            }
+        // arr.length가 최종 배열의 원소에 도달하지 못했을때 다음 원소에 대해 더하기와 마이너스 연산을 수행하도록 함
+        }else{
+            f_plus(num, total, target, arr);
+            f_minus(num, total, target, arr);
+        }
+    }
+    // 특정 값(arr[num]) 에 대해서 기존까지의 합인 sum에 대해 마이너스 연산을 수행함     
+    public void f_minus(int num, int sum,int target, int[] arr){
+        int total = sum - arr[num];
+        num++;
+        // arr.length가 최종 배열의 원소에 도달했을 때 target number와 비교하여 같으면 answer에 1을 더해줌
+        if(num == arr.length){
+             if(total == target){
+                answer++;
+            }
+        // arr.length가 최종 배열의 원소에 도달하지 못했을때 다음 원소에 대해 더하기와 마이너스 연산을 수행하도록 함
+        }else{
+            f_plus(num, total, target, arr);
+            f_minus(num, total, target, arr);
+        }
+    }
+}
