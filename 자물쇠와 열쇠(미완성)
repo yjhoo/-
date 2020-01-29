@@ -1,0 +1,120 @@
+import java.util.*;
+class Solution {
+    public boolean solution(int[][] key, int[][] lock) {
+        int count = 0;
+        int count2 = 0;
+        int rotate = 0;
+        int[][] key_r = key;
+        Vector<ArrayList<Integer>> v = new Vector<ArrayList<Integer>>();
+        for(int i = 0; i < lock.length; i++){
+            for(int j = 0; j < lock.length; j++){
+                if(lock[i][j] == 0){
+                    count++;
+                }          
+            }
+        }
+        int[][] paper = new int[lock.length + 2 * (key.length - count)][lock.length + 2 * (key.length - count)];
+        //System.out.println(paper.length);
+        boolean answer = false;        
+        for(int i = 0 ; i < paper.length ; i++){
+            Arrays.fill(paper[i],0);
+        }
+        //System.out.println(count);
+        
+        for(int i = 0; i < lock.length; i++){
+            for(int j = 0; j < lock.length; j++){
+                if(lock[i][j] == 1){
+                    paper[key.length - count + i][key.length - count + j] = 1;
+                }else{
+                    v.add(new ArrayList<Integer>());
+                    v.get(count2).add(key.length - count + i);
+                    v.get(count2).add(key.length - count + j);
+                    v.get(count2).add(0);
+                    count2++;
+                }
+            }
+        }
+        for(int i = 0; i < count2 ; i++){
+            //System.out.println(v.get(i));
+        }
+        for(int i = 0; i < paper.length; i++){
+            for(int j = 0; j < paper.length; j++){
+                System.out.print(paper[i][j]);
+            }
+            System.out.println();
+        }
+        while(rotate < 4){
+            // for(int i = 0; i < key.length; i++){
+            //     for(int j = 0; j < key.length; j++){
+            //         System.out.print(key_r[i][j]);
+            //     }
+            //     System.out.println();
+            // }
+            // System.out.println();
+            
+            if(f_result(key_r, paper, 0, 0, count2, v)){
+                return true;
+            }else{
+                key_r = f_rotate(key_r, lock);
+                rotate++;
+            }
+        }
+        return answer;
+    }
+    
+    public int[][] f_rotate(int[][] key, int[][] lock){
+        int[][] temp = new int[key.length][key.length];
+        for(int i = 0; i < key.length; i++){
+            for(int j = 0; j < key.length; j++){
+                temp[i][j] = key[j][key.length - 1 - i];
+            }
+        }
+        return temp;
+    }
+    public void f_row(int[][] key, int[][] paper, int row, int col, int count2, Vector<ArrayList<Integer>> v){
+        int temp = row + 1;
+        f_result(key, paper, temp, col, count2, v);
+    }
+    public void f_col(int[][] key, int[][] paper, int row, int col, int count2, Vector<ArrayList<Integer>> v){
+        int temp = col + 1;
+        f_result(key, paper, row, temp, count2, v);
+    }
+    public boolean f_result(int[][] key, int[][] paper, int row, int col, int count2, Vector<ArrayList<Integer>> v){
+        int temp = 0;
+        for(int i = row; i < key.length + row; i++){
+            for( int j = col ; j < key.length + col; j++){
+                temp = key[i - row][j - col] + paper[i][j];
+                if(temp == 2){
+                    break;
+                }
+               for(int k = 0 ; k < count2 ; k++){
+                   if(v.get(k).get(0) == i && j == v.get(k).get(1)){
+                       v.get(k).set(2,1);
+                       for(int q = 0; q < count2 ; q++){
+                            System.out.println(v.get(q));
+                        }
+                   }
+               } 
+            }
+            for(int k = 0 ; k < count2 ; k++){
+                if(0 == v.get(k).get(2)){
+                    for(int n = 0 ; n < count2 ; n++){
+                        v.get(k).set(2,0);
+                    }
+                    break;
+                }
+                if(k == count2 - 1 && 1 == v.get(k).get(2)){
+                    return true;
+                }
+           } 
+        }
+        if(row < 2 * (key.length - count2) ) {
+            f_row(key, paper, row, col, count2, v);
+        }
+        if(col < 2 * (key.length - count2) ){
+            f_col(key, paper, row, col, count2, v);
+        }
+        return false;
+    }
+    
+}
