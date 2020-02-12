@@ -1,0 +1,126 @@
+길 찾기 게임
+전무로 승진한 라이언은 기분이 너무 좋아 프렌즈를 이끌고 특별 휴가를 가기로 했다.
+내친김에 여행 계획까지 구상하던 라이언은 재미있는 게임을 생각해냈고 역시 전무로 승진할만한 인재라고 스스로에게 감탄했다.
+
+라이언이 구상한(그리고 아마도 라이언만 즐거울만한) 게임은, 카카오 프렌즈를 두 팀으로 나누고, 각 팀이 같은 곳을 다른 순서로 방문하도록 해서 먼저 순회를 마친 팀이 승리하는 것이다.
+
+그냥 지도를 주고 게임을 시작하면 재미가 덜해지므로, 라이언은 방문할 곳의 2차원 좌표 값을 구하고 각 장소를 이진트리의 노드가 되도록 구성한 후, 순회 방법을 힌트로 주어 각 팀이 스스로 경로를 찾도록 할 계획이다.
+
+라이언은 아래와 같은 특별한 규칙으로 트리 노드들을 구성한다.
+
+트리를 구성하는 모든 노드의 x, y 좌표 값은 정수이다.
+모든 노드는 서로 다른 x값을 가진다.
+같은 레벨(level)에 있는 노드는 같은 y 좌표를 가진다.
+자식 노드의 y 값은 항상 부모 노드보다 작다.
+임의의 노드 V의 왼쪽 서브 트리(left subtree)에 있는 모든 노드의 x값은 V의 x값보다 작다.
+임의의 노드 V의 오른쪽 서브 트리(right subtree)에 있는 모든 노드의 x값은 V의 x값보다 크다.
+아래 예시를 확인해보자.
+
+라이언의 규칙에 맞게 이진트리의 노드만 좌표 평면에 그리면 다음과 같다. (이진트리의 각 노드에는 1부터 N까지 순서대로 번호가 붙어있다.)
+
+import java.util.*;
+class Solution {
+    // preorder, posrorder에 사용할 int 변수
+    int count = 0;
+    // Node를 id, x값, y값, left, right를 갖도록 새로 선언
+    class Node{
+        // Node값 초기화
+        Node(int id, int x, int y){
+            this.id = id;
+            this.x = x;
+            this.y = y;
+            left = null;
+            right = null;
+        }
+        int id;
+        int x,y;
+        Node left;
+        Node right;
+    };
+    //값을 비교하기 위한 Comparator
+    Comparator<Node> comm = new Comparator<Node>(){
+        // Node값을 비교
+        public int compare(Node a, Node b){
+            // y값이 같으면 x값이 작은 쪽이 먼저 아니면 y값이 큰게 먼저
+            if(a.y == b.y){
+                return b.x - a.x;
+            }
+            return  b.y - a.y;
+        }
+    };
+    // Node값을 tree구조로 넣는 함수 p - 부모 , c - 자식
+    public void f_tree(Node p, Node c){
+        // 부모의 x값이 더 크면 left 아니면 right
+        if(c.x < p.x){
+            // left값이 null이면 c를 넣고 아니면 left값으로 다시 tree함수 수행
+            if(p.left == null){
+                p.left = c;
+            }else{
+                f_tree(p.left, c);
+            }
+        }else{
+            // right값이 null이면 c를 넣고 아니면 right값으로 다시 tree함수 수행
+            if(p.right == null){
+                p.right = c;
+            }else{
+                f_tree(p.right, c);
+            }
+        }
+    }
+    // preorder 값 구하는 함수
+    public void f_preorder(Node n, int[][] answer){
+        // n이 null이면 더이상 진행 불가므로 return;
+        if(n == null){
+            return;
+        }
+        // 처음에 n 값의 id를 넣어준다.
+        answer[0][count] = n.id + 1;
+        // 다음 값을 넣어야 하므로 count 증가
+        count++;
+        // preorder니까 left 먼저 탐색
+        f_preorder(n.left, answer);
+        // 없으면 right 탐색
+        f_preorder(n.right, answer);
+    }
+    //postorder 구하기 위한 함수
+    public void f_postorder(Node n, int[][] answer){
+        // n이 null이면 더이상 진행 불가므로 return;
+        if(n == null){
+            return;
+        }
+        // postorder니까 값을 먼저 넣지 말고 left 먼저 탐색
+        f_postorder(n.left, answer);
+        // left없으면 right 탐색
+        f_postorder(n.right, answer);
+        // 더이상 진행 불가 일때(제일 밑의 값) 값 입력
+        answer[1][count] = n.id + 1;
+        count++;
+    }
+    public int[][] solution(int[][] nodeinfo) {
+        // 문자 길이 변수
+        int length = nodeinfo.length;
+        // answer값 초기화
+        int[][] answer = new int[2][length];
+        // node값을 ArrayList로 만들어줌
+        List<Node> nodes = new ArrayList<Node>();
+        // nodes값 초기화
+        for(int i = 0 ; i < length ; i++){
+            nodes.add(i, new Node(i, nodeinfo[i][0], nodeinfo[i][1]));
+        }
+        // nodes값 sort
+        nodes.sort(comm);
+        // 초기 root값에 배열의 제일 앞에 있는 값을 넣고
+        Node root = nodes.get(0);
+        // f_tree 진행
+        for(int i = 1 ; i < length ; i++){
+            f_tree(root,nodes.get(i));
+        }
+        // preorder 진행
+        f_preorder(root, answer);
+        // count 값 초기화
+        count = 0;
+        // postoder 진행
+        f_postorder(root, answer);
+        return answer;
+    }
+}
